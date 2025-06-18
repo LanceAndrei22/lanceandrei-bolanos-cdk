@@ -24,6 +24,7 @@ export class LanceandreiBolanosCdkStack extends cdk.Stack {
       runtime: lambdaRuntime.Runtime.NODEJS_16_X,
       environment: {
         DYNAMODB_TABLE: table.tableName,
+        AES_SECRET_KEY: process.env.AES_SECRET_KEY!, // Pass the secret key to the Lambda environment
       },
     });
 
