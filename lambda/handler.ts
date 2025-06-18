@@ -138,10 +138,12 @@ exports.handler = async (event: any) => {
     try {
       const { id } = event.queryStringParameters;
       if (!id) {
-        return { statusCode: 400, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' }, body: JSON.stringify({ error: 'Missing required query parameter: id' }) };
+        return { statusCode: 400, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' },
+        body: JSON.stringify({ error: 'Missing required query parameter: id' }) };
       }
       if (!event.body) {
-        return { statusCode: 400, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' }, body: JSON.stringify({ error: 'Request body is empty' }) };
+        return { statusCode: 400, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' },
+        body: JSON.stringify({ error: 'Request body is empty' }) };
       }
       const { name, stock, price } = JSON.parse(event.body);
       const updateExpression: string[] = [];
@@ -165,7 +167,8 @@ exports.handler = async (event: any) => {
       }
 
       if (updateExpression.length === 0) {
-        return { statusCode: 400, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' }, body: JSON.stringify({ error: 'No fields to update' }) };
+        return { statusCode: 400, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' },
+        body: JSON.stringify({ error: 'No fields to update' }) };
       }
 
       const result = await dynamoDb.update({
@@ -187,9 +190,11 @@ exports.handler = async (event: any) => {
     } catch (error) {
       console.error('[ERROR] Failed to update item:', JSON.stringify(error, null, 2));
       if ((error as any).code === 'ConditionalCheckFailedException') {
-        return { statusCode: 404, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' }, body: JSON.stringify({ error: 'Item not found' }) };
+        return { statusCode: 404, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' },
+        body: JSON.stringify({ error: 'Item not found' }) };
       }
-      return { statusCode: 500, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' }, body: JSON.stringify({ error: 'Failed to update item' }) };
+      return { statusCode: 500, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' },
+      body: JSON.stringify({ error: 'Failed to update item' }) };
     }
   }
 
@@ -198,7 +203,8 @@ exports.handler = async (event: any) => {
     try {
       const { id } = event.queryStringParameters;
       if (!id) {
-        return { statusCode: 400, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' }, body: JSON.stringify({ error: 'Missing required query parameter: id' }) };
+        return { statusCode: 400, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' },
+        body: JSON.stringify({ error: 'Missing required query parameter: id' }) };
       }
 
       const result = await dynamoDb.delete({
@@ -208,7 +214,8 @@ exports.handler = async (event: any) => {
       }).promise();
 
       if (!result.Attributes) {
-        return { statusCode: 404, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' }, body: JSON.stringify({ error: 'Item not found' }) };
+        return { statusCode: 404, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' },
+        body: JSON.stringify({ error: 'Item not found' }) };
       }
 
       console.log('[INFO] Item deleted successfully');

@@ -38,17 +38,28 @@ export class LanceandreiBolanosCdkStack extends cdk.Stack {
       userPool,
     });
 
+    // Cognito Authorizer
+    const authorizerFn = new lambda.NodejsFunction(this, 'LanceCognitoUserAuthorizer', {
+      runtime: lambdaRuntime.Runtime.NODEJS_16_X,
+      entry: 'lambda/authorizer.ts',
+      handler: 'handler',
+      environment: {
+        COGNITO_REGION: this.region,
+        COGNITO_USER_POOL_ID: userPool.userPoolId,
+      },
+    });
+
+    const lambdaAuthorizer = new apigateway.TokenAuthorizer(this, 'LanceLambdaAuthorizer', {
+      handler: authorizerFn,
+    });
+
     // API Gateway with CORS
     const api = new apigateway.RestApi(this, 'LanceMyApi', {
       defaultCorsPreflightOptions: {
         allowOrigins: apigateway.Cors.ALL_ORIGINS,
         allowMethods: apigateway.Cors.ALL_METHODS,
+        allowHeaders: ['Content-Type', 'Authorization'],
       },
-    });
-
-    // Cognito Authorizer
-    const authorizer = new apigateway.CognitoUserPoolsAuthorizer(this, 'LanceCognitoAuthorizer', {
-      cognitoUserPools: [userPool],
     });
 
     // Define the /items resource
@@ -56,26 +67,26 @@ export class LanceandreiBolanosCdkStack extends cdk.Stack {
 
     // Add GET method
     resource.addMethod('GET', new apigateway.LambdaIntegration(lambdaFn), {
-      authorizer,
-      authorizationType: apigateway.AuthorizationType.COGNITO,
+      authorizer: lambdaAuthorizer,
+      authorizationType: apigateway.AuthorizationType.CUSTOM,
     });
 
     // Add POST method
     resource.addMethod('POST', new apigateway.LambdaIntegration(lambdaFn), {
-      authorizer,
-      authorizationType: apigateway.AuthorizationType.COGNITO,
+      authorizer: lambdaAuthorizer,
+      authorizationType: apigateway.AuthorizationType.CUSTOM,
     });
 
     // Add PUT method
     resource.addMethod('PUT', new apigateway.LambdaIntegration(lambdaFn), {
-      authorizer,
-      authorizationType: apigateway.AuthorizationType.COGNITO,
+      authorizer: lambdaAuthorizer,
+      authorizationType: apigateway.AuthorizationType.CUSTOM,
     });
 
     // Add DELETE method
     resource.addMethod('DELETE', new apigateway.LambdaIntegration(lambdaFn), {
-      authorizer,
-      authorizationType: apigateway.AuthorizationType.COGNITO,
+      authorizer: lambdaAuthorizer,
+      authorizationType: apigateway.AuthorizationType.CUSTOM,
     });
 
     // Outputs for testing
